@@ -1,0 +1,52 @@
+name: Monitor IANA tz NEWS
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download NEWS
+        run: |
+          curl -fsSL https://ftp.iana.org/tz/code/NEWS -o NEWS.new
+
+      - name: Detect changes
+        id: diff
+        run: |
+          if [ ! -f NEWS ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          elif ! cmp -s NEWS NEWS.new; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Replace NEWS
+        if: steps.diff.outputs.changed == 'true'
+        run: mv NEWS.new NEWS
+
+      - name: Setup Python
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Generate RSS feed
+        if: steps.diff.outputs.changed == 'true'
+        run: python generate_feed.py
+
+      - name: Commit changes
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "tz-news-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add NEWS feed.xml
+          git commit -m "Update tz NEWS"
+          git push
