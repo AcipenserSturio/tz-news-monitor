@@ -47,4 +47,55 @@ Release 2026a - 2026-03-01 22:59:49 -0800
     zic now can generate, and localtime.c can now use, TZif files that
     hold up to 256 bytes of abbreviations, counting trailing NULs.
     The previous limit was 50 bytes, and some tzdata TZif files were
-    already consumin</description></item></channel></rss>
+    already consumin</description></item><item><title>NEWS updated</title><link>https://ftp.iana.org/tz/code/NEWS</link><pubDate>Thu, 23 Apr 2026 13:55:34 GMT</pubDate><description>News for the tz database
+
+Release 2026a - 2026-04-22 23:06:43 -0700
+
+  Briefly:
+    British Columbia moved to permanent -07 on 2026-03-09.
+    Some more overflow bugs have been fixed in zic.
+
+  Changes to future timestamps
+
+    British Columbia’s 2026-03-08 spring forward was its last
+    foreseeable clock change, as it moved to permanent -07 thereafter.
+    (Thanks to Arthur David Olson.)  Although the change to permanent
+    -07 legally took place on 2026-03-09, temporarily model the change
+    to occur on 2026-11-01 at 02:00 instead.  This works around a
+    limitation in CLDR v48.2 (2026-03-17).  This temporary hack is
+    planned to be removed after CLDR is fixed.
+
+  Changes to code
+
+    zic no longer mishandles a last transition to a new time type.
+
+    zic no longer overflows a buffer when generating a TZ string like
+    "PST-167:59:58PDT-167:59:59,M11.5.6/-167:59:59,M12.5.6/-167:59:59",
+    which can occur with adversarial input.  (Thanks to Naveed Khan.)
+
+    zic no longer generates a longer TZif file than necessary when
+    an earlier time zone abbreviation is a suffix of a later one.
+    As a nice side effect, zic no longer overflows a buffer when given
+    a long series of abbreviations, each a suffix of the next.
+    (Buffer overflow reported by Arthur Chan.)
+
+    zic no longer overflows an int when processing input like ‘Zone
+    Ouch 2147483648:00:00 - LMT’.  The int overflow can lead to buffer
+    overflow in adversarial cases.  (Thanks to Naveed Khan.)
+
+    zic now checks for signals more often.
+
+
+Release 2026a - 2026-03-01 22:59:49 -0800
+
+  Briefly:
+    Moldova has used EU transition times since 2022.
+    The “right” TZif files are no longer installed by default.
+    -DTZ_RUNTIME_LEAPS=0 disables runtime support for leap seconds.
+    TZif files are no longer limited to 50 bytes of abbreviations.
+    zic is no longer limited to 50 leap seconds.
+    Several integer overflow bugs have been fixed.
+
+  Changes to past and future timestamps
+
+    Since 202</description></item></channel></rss>
